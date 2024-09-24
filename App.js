@@ -1,20 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from './context/AuthContext'; // Adjust the path as needed
+import MainNavigator from './navigation/MainNavigator'; // Your main navigator
+import AuthNavigator from './navigation/AuthNavigator'; // Your auth screens
+import LoadingScreen from './screens/LoadingScreen'; // Loading screen
+import AuthContext from './context/AuthContext'; // Import the AuthContext
 
-export default function App() {
+const App = () => {
+  const { isAuthenticated, isLoading } = useContext(AuthContext);
+
+  // Show a loading screen while determining auth state
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      {/* Render the appropriate navigator based on authentication status */}
+      {isAuthenticated ? <MainNavigator /> : <AuthNavigator />}
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// Wrap App component with AuthProvider to provide auth context
+export default () => (
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);
